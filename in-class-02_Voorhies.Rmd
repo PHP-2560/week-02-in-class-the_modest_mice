@@ -1,6 +1,6 @@
 # In-Class: September 19, 2018
 
-#Voorhies Version
+#Voorhies Version 
 ## Part 1 (You can do this with or without dplyr)
 
 1. The data set at rnf6080.dat records hourly rainfall at a certain location in Canada, every day from 1960 to 1980. First, we need to load the data set into R using the command read.table(). Use the help function to learn what arguments this function takes. Once you have the necessary input, load the data set into R and make it a data frame called rain.df.
