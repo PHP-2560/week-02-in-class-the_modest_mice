@@ -4,16 +4,45 @@
 ## Part 1 (You can do this with or without dplyr)
 
 1. The data set at rnf6080.dat records hourly rainfall at a certain location in Canada, every day from 1960 to 1980. First, we need to load the data set into R using the command read.table(). Use the help function to learn what arguments this function takes. Once you have the necessary input, load the data set into R and make it a data frame called rain.df.
-2. How many rows and columns does rain.df have? (If there are not 5070 rows and 27 columns, something is wrong; check the previous part to see what might have gone wrong in the previous part.)
-3. What are the names of the columns of rain.df?
-4. What is the value of row 5, column 7 of rain.df?
-5. Display the second row of rain.df in its entirety.
-6. Explain what the command below doesby running it on your data and examining the object. (You may find the display functions head() and tail() useful here.) Is it clear now what the last 24 columns represent?
+```{r}
+rain.df = read.table("rnf6080.dat")
 ```
+2. How many rows and columns does rain.df have? (If there are not 5070 rows and 27 columns, something is wrong; check the previous part to see what might have gone wrong in the previous part.)
+```{r}
+dim(rain.df)
+```
+3. What are the names of the columns of rain.df?
+```{r}
+names(rain.df)
+```
+4. What is the value of row 5, column 7 of rain.df?
+```{r}
+rain.df[5,7]
+```
+
+5. Display the second row of rain.df in its entirety.
+```{r}
+rain.df[,2]
+```
+6. Explain what the command below does by running it on your data and examining the object. (You may find the display functions head() and tail() useful here.) Is it clear now what the last 24 columns represent?
+```{r}
 names(rain.df) <- c("year","month","day",seq(0,23))
-````
+```
+The command names the first three columns year, month and day respectively. It is not clear what the last 24 columns represent.
+
 7. Create a new column in the data frame called daily, which is the sum of the rightmost 24 columns. With this column, create a histogram of the values in this column, which are supposed to be daily rainfall values. What is wrong with this picture?
+```{r}
+rain.df$daily = rowSums(rain.df[,4:27])
+hist(rain.df$daily)
+```
+The histogram shows that there are negative rainfall values, which does not make sense.
+
 8. Create a new data frame rain.df.fixed that takes the original and fixes it for the apparent flaw you have discovered. Having done this, produce a new histogram with the corrected data and explain why this is more reasonable.
+```{r}
+neg_vals = which(rain.df$daily < 0)
+rain.df.fixed = rain.df[-neg_vals,]
+hist(rain.df.fixed$daily)
+```
 
 ## Part 2
 ### New York City Flights 13
@@ -24,7 +53,7 @@ names(rain.df) <- c("year","month","day",seq(0,23))
 - `airports` [1397 x 7]. Airport data.
 
 
-```
+```{r}
 library(nycflights13)
 library(dplyr)
 flights
@@ -44,27 +73,53 @@ The `dplyr` package uses verbs to perform data manipulation.
 ### Filtering Rows
 
 1. Filter all flights on your birthday.
+```{r}
+flights %>% filter(month == 10, day == 12)
+```
 2. Filter all flights in rows 567 - 589
-
+```{r}
+filter(flights[567 : 589,])
+```
 
 ### Arranging Rows
 3. Use arrange() to order the data by year, month and day
+```{r}
+arrange(flights, year, month, day)
+```
 4. Use desc() to arrange flights by arrival delay.
-
+```{r}
+arrange(flights, desc(arr_delay))
+```
 
 ### Select
-5. Select columns containing data information.
+5. Select columns containing date information.
+```{r}
+select(flights, 1:3)
+```
 6. Select columns including only plane information.
+```{r}
+select(flights, 10:12)
+```
 7. Rename tailnum to tail_num
-
-
+```{r}
+select()
+```
 ### Mutating Rows
-8. Create a variable called gain which describes the difference between arrival delap and departure delay.
+8. Create a variable called gain which describes the difference between arrival delay and departure delay.
+```{r}
+mutate(flights, gain = arr_delay - dep_delay) 
+```
 9. Create a variable called speed which is distance over time in hours.
+```{r}
+mutate(flights, speed = distance / hour)
+```
 
 
 ###Summarise
 10. Summarise the average delay for all flights.
+```{r}
+summarise(flights, avg_delay = mean(arr_delay, na.rm = TRUE))
+```
 
 ## Overall Questions
 
