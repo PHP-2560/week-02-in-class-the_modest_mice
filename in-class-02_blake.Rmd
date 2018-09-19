@@ -148,7 +148,7 @@ In the videos we learned about piping our commands. The goal of piping is to hel
 
 13. Consider the code Below:
 
-```
+```{r}
 filter(
   summarise(
     select(
@@ -163,9 +163,26 @@ filter(
 ```
 
 a. What are some problems with this function?
+
+It appears that the select command does not specify any columns. 
+
 b. How easy is it to follow the logic of this?
+
+As it is currently written, it is somewhat difficult to understand what the final result represents. While the notation is clean, there are so many commands that it is easy to get overwhelmed with information. 
+
 c. Rewrite this using piping to make it more understandable.
+
+```{r}
+flights %>%
+  group_by(year, month, day) %>%
+  select(arr_delay, dep_delay) %>%
+  summarise(arr = mean(arr_delay, na.rm = TRUE), dep = mean(dep_delay, na.rm = TRUE)) %>%
+  filter(arr>30 | dep>30)
+  
+```
 d. Does your rewritten command give the same results?
+
+Yes. The piped version produces the exact same result.
 
 14. Consider the code below
 
