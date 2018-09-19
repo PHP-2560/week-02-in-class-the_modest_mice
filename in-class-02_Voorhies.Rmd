@@ -112,6 +112,9 @@ The `dplyr` package uses verbs to perform data manipulation.
 ###Summarise
 10. Summarise the average delay for all flights.
 
+?summarise
+summarise()
+
 ## Overall Questions
 
 11. Split the complete dataset into individual planes and then summarise each plane by counting the number of flights (count = n()) and computing the average distance and arrival delay . Then plot this:
