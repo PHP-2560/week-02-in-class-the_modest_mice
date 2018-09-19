@@ -71,6 +71,7 @@ hist(rain.df.fixed$daily)
 
 
 ```
+install.packages("nycflights13")
 library(nycflights13)
 library(dplyr)
 flights
@@ -108,16 +109,23 @@ The `dplyr` package uses verbs to perform data manipulation.
 8. Create a variable called gain which describes the difference between arrival delap and departure delay.
 9. Create a variable called speed which is distance over time in hours.
 
-
+glimpse(flights)
 ###Summarise
 10. Summarise the average delay for all flights.
-
-?summarise
-summarise()
+names(flights)
+?mean
+#average delay (both arrival & departure) for all flights
+summarise(flights, avg_delay = mean(arr_delay+dep_delay,na.rm=TRUE))
 
 ## Overall Questions
 
 11. Split the complete dataset into individual planes and then summarise each plane by counting the number of flights (count = n()) and computing the average distance and arrival delay . Then plot this:
+install.packages("ggplot2")
+library(ggplot2)
+
+delay <- flights %>%
+group_by(carrier)%>%
+summarise(count=n(), dist = mean(distance, na.rm = TRUE), delay = mean(arr_delay, na.rm=TRUE))
 
 ```
 ggplot(delay, aes(dist, delay)) +
@@ -126,6 +134,13 @@ ggplot(delay, aes(dist, delay)) +
   scale_size_area()
 ```
 12. Find the number of planes and the number of flights that go to each possible destination.
+names(flights)
+flights %>%
+group_by(dest) %>%
+summarise(nFlights = n_distinct("flight") %>%
+summarise(nPlanes=n_distinct("flight"))%>%
+print(nFlights)
+nPlanes
 
 ### More Difficult
 
