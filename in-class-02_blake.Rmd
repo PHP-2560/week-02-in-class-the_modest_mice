@@ -118,7 +118,10 @@ names(flights)
 flights <- mutate(flights, gain = arr_delay - dep_delay)
 
 #9 Create speed variable, which describes distance over time
-flights <- mutate(flights, speed = distance / air_time)
+#Make sure to calculate in terms of hours instead of minutes
+flights <- mutate(flights, speed = distance / (air_time / 60 ))
+
+
 ```
 
 ###Summarise
