@@ -41,7 +41,7 @@ hist(rain.df$sum)
 
 #8
 #Replace indices with value -999 with NA
-rain.df[rain.df==-999] <- NA
+rain.df[rain.df<0] <- NA
 
 #Recalculate sum column and create histogram
 rain.df$sum <- rowSums(rain.df[,4:27],na.rm = TRUE)
@@ -58,7 +58,7 @@ hist(rain.df$sum)
 - `airports` [1397 x 7]. Airport data.
 
 
-```
+```{r}
 library(nycflights13)
 library(dplyr)
 flights
@@ -87,15 +87,39 @@ The `dplyr` package uses verbs to perform data manipulation.
 
 
 ### Select
-5. Select columns containing data information.
+5. Select columns containing date information.
 6. Select columns including only plane information.
 7. Rename tailnum to tail_num
 
+```{r}
+#inspect structure of flights dataset
+str(flights)
+
+#5 select only date information from flights data
+select(flights, year, month, day)
+
+#6 Select only carrier and tailnum columns from flights data 
+select(flights, carrier, tailnum)
+
+#7
+#rename tailnum column to tail_num
+names(flights)[12] <- "tail_num"
+
+#Print column names to make sure we renamed tail_num correctly
+names(flights)
+```
 
 ### Mutating Rows
 8. Create a variable called gain which describes the difference between arrival delap and departure delay.
 9. Create a variable called speed which is distance over time in hours.
 
+```{r}
+#8 Create gain variable, which describes the difference between arrival delay and departure delay
+flights <- mutate(flights, gain = arr_delay - dep_delay)
+
+#9 Create speed variable, which describes distance over time
+flights <- mutate(flights, speed = distance / air_time)
+```
 
 ###Summarise
 10. Summarise the average delay for all flights.
