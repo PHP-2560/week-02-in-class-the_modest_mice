@@ -9,11 +9,45 @@
 4. What is the value of row 5, column 7 of rain.df?
 5. Display the second row of rain.df in its entirety.
 6. Explain what the command below doesby running it on your data and examining the object. (You may find the display functions head() and tail() useful here.) Is it clear now what the last 24 columns represent?
-```
-names(rain.df) <- c("year","month","day",seq(0,23))
-````
 7. Create a new column in the data frame called daily, which is the sum of the rightmost 24 columns. With this column, create a histogram of the values in this column, which are supposed to be daily rainfall values. What is wrong with this picture?
 8. Create a new data frame rain.df.fixed that takes the original and fixes it for the apparent flaw you have discovered. Having done this, produce a new histogram with the corrected data and explain why this is more reasonable.
+
+```{r}
+#1 import dataset
+rain.df <- read.table("rnf6080.dat")
+
+#2 display rows and columns of rain.df
+dim(rain.df)
+
+#3 Display column names
+names(rain.df)
+
+#4 display value of row 5, column 7
+rain.df[5,7]
+
+#5 Display second row of rain.df
+rain.df[2, ]
+
+# 6 
+names(rain.df) <- c("year","month","day",seq(0,23))
+#The above command renames the column names of rain.df. Now, inspecting the column names reveals that the first three columns describe the date that the obsevation was recorded, and columns 0-23 are observations at each hour on that day.
+
+#7
+#Create new column which is the sum of the rightmost 24 columns
+rain.df$sum <- rowSums(rain.df[,4:27],na.rm = TRUE)
+
+#Display new column in histogram
+hist(rain.df$sum)
+
+#8
+#Replace indices with value -999 with NA
+rain.df[rain.df==-999] <- NA
+
+#Recalculate sum column and create histogram
+rain.df$sum <- rowSums(rain.df[,4:27],na.rm = TRUE)
+hist(rain.df$sum)
+```
+
 
 ## Part 2
 ### New York City Flights 13
