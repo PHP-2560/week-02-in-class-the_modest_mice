@@ -5,10 +5,15 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#Don't forget to install the packages in the console!
 library(dplyr)
+library(nycflights13)
+library(ggplot2)
+library(tidyr)
 ```
 
-## Part 1: 
+## Part I: 
 
 1. The data set at rnf6080.dat records hourly rainfall at a certain location in Canada, every day from 1960 to 1980. First, we need to load the data set into R using the command read.table(). Use the help function to learn what arguments this function takes. Once you have the necessary input, load the data set into R and make it a data frame called rain.df.
 
@@ -78,4 +83,211 @@ This histogram has negative values. There can be no negative rainfall amounts.
 rain.df[rain.df < 0] = NA
 hist(rain.df$daily, main = "Histogram of Daily Rainfall", xlab = "Daily Rainfall Amount", ylab = "Frequency") 
 ```
+\
+
 This graph is much more reasonable because there are no negative values. 
+
+## Part II:
+### Question 1: 
+1. Filter all flights on your birthday.
+```{r}
+#inspect structure of flights dataset
+str(flights)
+
+#Part 1:
+flights %>% 
+  filter(month == 07 & day == 22)
+```
+### Question 2: 
+2. Filter all flights in rows 567 - 589
+```{r}
+#Part 2:
+flights %>%
+  filter(row_number() %in% 567:589)
+```
+### Question 3: 
+3. Use arrange() to order the data by year, month and day
+```{r}
+#Part 3: 
+flights %>%
+  arrange(year, month, day)
+```
+
+#Question 4: 
+4. Use desc() to arrange flights by arrival delay.
+```{r}
+#Part 4:
+flights %>% 
+  arrange(desc(arr_delay))
+```
+
+### Question 5: 
+5. Select columns containing data information.
+```{r}
+#Part 5: 
+flights %>% 
+  select(1:3)
+```
+
+### QUestion 6: 
+6. Select columns including only plane information.
+```{r}
+#Part 6: 
+flights %>%
+  select(flight, tailnum, carrier)
+```
+
+### Question 7: 
+7. Rename tailnum to tail_num
+```{r}
+#Part 7:
+flights %>%
+  rename('tail_num' = tailnum)
+```
+
+### Question 8: 
+8. Create a variable called gain which describes the difference between arrival delap and departure delay.
+```{r}
+#Part 8: Calculates the total time delayed or gained. 
+flights %>%
+  mutate(gain = arr_delay + dep_delay)
+```
+
+### Question 9:
+9. Create a variable called speed which is distance over time in hours.
+```{r}
+#Part 9: 
+flights %>%
+  mutate(speed = distance/(air_time/60))
+```
+
+### Question 10: 
+10. Summarise the average delay for all flights.
+```{r}
+#Part 10: 
+flights %>%
+  summarise(mean(arr_delay + dep_delay, na.rm = TRUE))
+```
+## Overall Questions:
+### Question 11:
+11. Split the complete dataset into individual planes and then summarise each plane by counting the number of flights (count = n()) and computing the average distance and arrival delay . Then plot this:
+
+```
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth() +
+  scale_size_area()
+```
+
+```{r}
+delay = 
+  flights %>%
+  group_by(tailnum) %>%
+  summarise(count = n(), dist = mean(distance, na.rm = TRUE), delay = mean(arr_delay, na.rm = TRUE)) 
+
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth() +
+  scale_size_area()
+```
+
+### Question 12: 
+12. Find the number of planes and the number of flights that go to each possible destination.
+```{r}
+#Part 12: 
+flights %>% 
+  group_by(dest) %>%
+  summarise(num_flights = n(), num_planes = n_distinct(tailnum))
+```
+
+### Question 13: 
+Consider the code Below:
+
+```{r}
+filter(
+  summarise(
+    select(
+      group_by(flights, year, month, day),
+      arr_delay, dep_delay
+    ),
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ),
+  arr > 30 | dep > 30
+)
+```
+
+a. What are some problems with this function? 
+b. How easy is it to follow the logic of this? 
+c. Rewrite this using piping to make it more understandable. 
+d. Does your rewritten command give the same results?
+
+#### Part a:
+The problem with this function is that it serves several purposes. The independent functions should be separated for absolute clarity. 
+
+#### Part b: 
+Because this one large function does multiple things, the clarity/logic behind it isn't crystal clear. 
+
+#### Part c: 
+```{r}
+flights %>%
+  group_by(year, month, day) %>%
+  select(arr_delay, dep_delay) %>%
+  summarise(arr = mean(arr_delay, na.rm = TRUE),
+            dep = mean(dep_delay, na.rm = TRUE)) %>%
+  filter(arr > 30 | dep > 30)
+```
+
+### Part d: 
+Yes, it gives the same results. 
+
+### Question 14: 
+Consider the code below:
+
+```
+hourly_delay <- filter(
+  summarise(
+    group_by(
+      filter(
+        flights, 
+        !is.na(dep_delay)
+      ),
+      date, hour
+    ),
+    delay=mean(dep_delay),
+    n=n()
+  ),
+  n>10
+)
+```
+
+a. What are some problems with this function? 
+b. How easy is it to follow the logic of this? 
+c. Rewrite this using piping to make it more understandable. 
+d. Does your rewritten command give the same results?
+
+#### Part a: 
+This doesn't even run because there is no "date" variable. It is extremely chaotic and I hate the arrow instead of equal sign. They need to at least write the arguments of filter on the same line.
+
+#### Part b: 
+It is very hard to follow the logic.
+
+#### Part c: 
+```{r}
+hourly_delay = 
+  flights %>%
+    unite("date", 1:3, sep = "-" ) %>%
+    filter(!is.na(dep_delay)) %>%
+    group_by(date, hour) %>%
+    summarise(delay = mean(dep_delay), n = n()) %>%
+    filter(n > 10)%>%
+    arrange(date, hour)
+```
+
+#### Part d: 
+There weren't results from the previous version so it is impossible to compare. However, if there were an explicit date variable, I think they would give the same results. 
+
+## Creative Exploration Part: 
+
+
+
