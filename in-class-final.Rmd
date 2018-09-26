@@ -129,7 +129,7 @@ flights %>%
   select(1:3)
 ```
 
-### QUestion 6: 
+### Question 6: 
 6. Select columns including only plane information.
 ```{r}
 #Part 6: 
@@ -150,7 +150,7 @@ flights %>%
 ```{r}
 #Part 8: Calculates the total time delayed or gained. 
 flights %>%
-  mutate(gain = arr_delay + dep_delay)
+  mutate(gain = arr_delay - dep_delay)
 ```
 
 ### Question 9:
@@ -166,7 +166,7 @@ flights %>%
 ```{r}
 #Part 10: 
 flights %>%
-  summarise(mean(arr_delay + dep_delay, na.rm = TRUE))
+  summarise(mean(arr_delay - dep_delay, na.rm = TRUE))
 ```
 ## Overall Questions:
 ### Question 11:
@@ -288,6 +288,7 @@ hourly_delay =
 There weren't results from the previous version so it is impossible to compare. However, if there were an explicit date variable, I think they would give the same results. 
 
 ## Creative Exploration Part: 
+There is a data set called "weather." I would compare the "wind speed", "precip", and "visib" variables to the dates of the most delayed flights to see if there is any underlying common weather theme. To do this more quantitatively, I would perform a regression and see if there is a statistical relationship. 
 
 
 

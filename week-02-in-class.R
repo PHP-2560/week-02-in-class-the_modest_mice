@@ -161,3 +161,16 @@ hourly_delay =
     filter(n > 10)%>%
     arrange(date, hour)
     
+#Creative part: 
+hourly_delay2 = 
+  flights %>%
+  unite("date", 1:3, sep = "-" ) %>%
+  group_by(date, hour, origin) %>%
+  summarise(delay = mean(dep_delay), n = n()) %>%
+  arrange(date, hour,origin)
+
+weather = as.data.frame(weather)
+weather = 
+  weather %>%
+    arrange(year, month, day, hour, origin) %>%
+    filter
